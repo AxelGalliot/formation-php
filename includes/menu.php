@@ -2,6 +2,7 @@
 $items = [
     '/' => 'Accueil',
     '/lecture-csv' => 'Lecture CSV',
+    '/carnet-contacts' => 'Carnet de contacts',
 ];
 
 $currentPath = rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');

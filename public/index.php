@@ -9,6 +9,7 @@ $uri = $uri === '' ? '/' : $uri;
 $routes = [
     '/' => 'home',
     '/lecture-csv' => 'lecture-csv',
+    '/carnet-contacts' => 'carnet-contacts',
 ];
 
 $pageKey = $routes[$uri] ?? null;
@@ -24,6 +25,7 @@ if ($pageKey === null) {
 $title = match ($pageKey) {
     'home' => 'Accueil',
     'lecture-csv' => 'Lecture CSV',
+    'carnet-contacts' => 'Carnet de contacts',
     default => 'Mon site PHP',
 };
 

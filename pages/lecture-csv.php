@@ -1,21 +1,33 @@
 <section>
     <h2>Lecture d'un fichier CSV</h2>
+
+    <?php
+    $ville = filter_input(INPUT_GET, 'ville', FILTER_UNSAFE_RAW) ?? '';
+    $ville = strtolower(trim($ville));
+    ?>
     <form method="get">
-        Rechercher une ville : <input type="text" name="ville"/>
+        Rechercher une ville : 
+        <input type="text" name="ville" value="<?= htmlspecialchars($ville, ENT_QUOTES |ENT_SUBSTITUTE, 'UTF-8')?>"/>
         <button type="submit">Filtrer</button>
     </form>
+
     <?php
     $csvPath = __DIR__ . '/../data/data.csv';
-    $data = lireCsv($csvPath);
-    $array = [];
+    if (!is_readable($csvPath)) {
+        echo "<p>Fichier de données indisponible.</p>";
+        return;
+    }
 
-    if (!empty($_GET['ville'])) {
-        $ville = strtolower(trim($_GET['ville']));
+    $data = lireCsv($csvPath);
+    $array = $data;
+
+    if (!$ville !== '') {
         $array = array_filter($data, function ($row) use ($ville) {
-            return strpos(strtolower($row['ville']), $ville) !== false;
+            $val = strtolower((string)($row['ville'] ?? ''));
+            return $val !== '' && (function_exists('str_contains')
+                ? str_contains($val, $ville)
+                : strpos($val, $ville) !== false);
         });
-    } else {
-        $array = $data;
     }
 
     if (empty($array)) {
@@ -23,13 +35,13 @@
     } else {
         echo "<table border='1' cellpadding='5' cellspacing='0'>";
         // En-têtes
-        echo "<thead>";
-        echo "<tr>";
-        foreach (array_keys($array[0]) as $header) {
+        $first = reset($array);
+        echo "<thead><tr>";
+
+        foreach (array_keys($first) as $header) {
             echo "<th>" . htmlspecialchars($header, ENT_QUOTES) . "</th>";
         }
-        echo "</tr>";
-        echo "</thead>";
+        echo "</tr></thead>";
 
         // Données
         echo "<tbody>";
@@ -40,9 +52,7 @@
             }
             echo "</tr>";
         }
-        echo "</tbody>";
-
-        echo "</table>";
+        echo "</tbody></table>";
     }
     ?>
 </section>

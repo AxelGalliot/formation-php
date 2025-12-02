@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+date_default_timezone_set('Europe/Paris');
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1); // Dev : 1  | Prod : 0
 ini_set('log_errors', 1);
@@ -14,8 +16,8 @@ define('DATA_PATH', BASE_PATH . '/data');
 
 class LoggedException extends RuntimeException {}
 
-$logDir = __DIR__ . '/../logs';
-if (!is_dir($logDir)) {
+define('LOG_DIR', __DIR__ . '/../logs');
+if (!is_dir(LOG_DIR)) {
 	mkdir($logDir, 0775, true);
 }
 
@@ -33,10 +35,10 @@ function gestionnaireException(Throwable $e): void {
     $line = sprintf("[%s] %s | %s\n",
         date('Y-m-d H:i:s'),
         $e->getMessage(),
-        json_encode($ctx, JSON_UNESCAPED_SLASHES)
+        json_encode($ctx, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR)
     );
 
-    file_put_contents($GLOBALS['logDir'] . '/exceptions.log', $line, FILE_APPEND);
+    file_put_contents(LOG_DIR . '/exceptions.log', $line, FILE_APPEND);
 }
 
 set_error_handler(function($errno, $errstr, $errfile, $errline) {
@@ -52,8 +54,8 @@ set_exception_handler(function(Throwable $e) {
     
     if (ini_get('display_errors')) {
         echo "<h1>Erreur fatale</h1>";
-        echo "<p>" . htmlspecialchars($e->getMessage()) . "</p>";
-        echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
+        echo "<p>" . htmlspecialchars($e->getMessage(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</p>";
+        echo "<pre>" . htmlspecialchars($e->getTraceAsString(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . "</pre>";
     } else {
         echo "<h1>Une erreur est survenue</h1>";
         echo "<p>Veuillez réessayer plus tard.</p>";
