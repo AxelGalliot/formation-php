@@ -10,6 +10,7 @@ $routes = [
     '/' => 'home',
     '/lecture-csv' => 'lecture-csv',
     '/carnet-contacts' => 'carnet-contacts',
+    '/gestion-commandes' => 'gestion-commandes',
 ];
 
 $pageKey = $routes[$uri] ?? null;
